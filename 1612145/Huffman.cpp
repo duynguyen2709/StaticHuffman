@@ -18,8 +18,7 @@ void printCodes(Node* root, string str, vector<pair<char, string>> &code)
 	printCodes(root->right, str + "1",code);
 }
 
-
-void HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, string>> &code)
+Node* HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, string>> &code)
 {
 	Node *left, *right, *top;
 
@@ -29,12 +28,13 @@ void HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, st
 
 	while (minHeap.size() != 1)
 	{
-
+		
 		left = minHeap.top();
 		minHeap.pop();
 
 		right = minHeap.top();
 		minHeap.pop();
+
 
 		top = new Node('$', left->freq + right->freq);
 		top->left = left;
@@ -45,6 +45,8 @@ void HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, st
 	
 	printCodes(minHeap.top(), "",code);
 	cout << endl;
+
+	return top;
 }
 
 string HuffmanOut(vector<char> inputString, vector<pair<char, string>> code)
@@ -62,6 +64,7 @@ string HuffmanOut(vector<char> inputString, vector<pair<char, string>> code)
 	}
 	return output;
 }
+
 void writeHuffmanFile(string str,char *output)
 {
 	freopen(output, "wb", stdout);
@@ -70,31 +73,45 @@ void writeHuffmanFile(string str,char *output)
 	vector<string> arr;
 	string temp;
 
-	while (k < str.length())
+	while (k <= str.length())
 	{
+		temp += str[k];
+		i++;
 		if (i == 8 || k == str.length() - 1)
 		{
 			arr.push_back(temp);
 			temp = "";
-			i = 0;
-			k++;
-		}
-		else {
-			temp += str[k++];
-			i++;
-		}
+			i = 0;		
+		}	
+		k++;
 	}
+	int left = 0;
 	for (string val : arr)
 	{
 		if (val.length() != 8)
 		{
-			int left = 8 - val.length();
+			left = 8 - val.length();
 			for (int j = 0; j < left; j++)
 				val = '0' + val;
 
 		}
 		BYTE x = static_cast<BYTE>(std::stoi(val, 0, 2));
 		cout << x;
+		
 	}
+	cout << left;
+
+}
+
+void writeHuffmanTree(Node *root)
+{
+		if (root == NULL)
+		{
+			cout << "-1 ";
+			return;
+		}		
+		cout << root->data << " ";
+		writeHuffmanTree(root->left);
+		writeHuffmanTree(root->right);
 	
 }

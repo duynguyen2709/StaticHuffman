@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Huffman.h"
 #include <vector>
+#include <wtypes.h>
 using namespace std;
 
 
@@ -17,6 +18,10 @@ int main(int argc, char *argv[])
 
 		if (strcmp(argv[1], "compress") == 0)
 		{
+			if (argc !=4)
+			{
+				throw ex;
+			}
 			vector<char> letter;
 			vector<char> inputString;
 			vector<int> freq;
@@ -34,7 +39,9 @@ int main(int argc, char *argv[])
 				f[x]++;
 				inputString.push_back(x);
 			}
-
+			auto c = (char)inputString.back();
+			f[c]--;
+			inputString.pop_back();
 			for (int i = 0; i < 256; i++)
 			{
 				if (f[i]>0)
@@ -44,13 +51,18 @@ int main(int argc, char *argv[])
 				}
 			}
 			
-			HuffmanCompress(letter, freq,code);
-
+			Node * root = HuffmanCompress(letter, freq,code);
 			string outputString = HuffmanOut(inputString, code);
 			writeHuffmanFile(outputString, argv[3]);
+			freopen(argv[3], "wt", stdout);
+			writeHuffmanTree(root);
 		}
 		else if (strcmp(argv[1], "uncompress") == 0)
 		{
+			if (argc != 5)
+			{
+				throw ex;
+			}
 		}
 		else throw ex;
 	}

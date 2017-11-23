@@ -8,9 +8,9 @@ using namespace std;
 
 struct Node
 {
-	unsigned char data;			 // One of the input characters
-	unsigned int freq;			 // Frequency of the character
-	Node *left, *right; // Left and right child
+	unsigned char data;			 
+	unsigned int freq;			 
+	Node *left, *right; 
 
 	Node(unsigned char data, unsigned int freq)
 	{
@@ -30,13 +30,13 @@ struct compare
 
 void printCodes(Node* root, string str, vector<pair<char, string>> &code);
 
-void HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, string>> &code);
-
+Node* HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, string>> &code);
 
 string HuffmanOut(vector<char> inputString, vector<pair<char, string>> code);
 
 void writeHuffmanFile(string str, char *output);
 
+void writeHuffmanTree(Node *root);
 class ArgumentException :public exception
 {
 private:
