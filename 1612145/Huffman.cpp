@@ -140,6 +140,7 @@ namespace Compress{
 		}
 	}
 }
+
 namespace Uncompress{
 
 	void restoreHuffmanTree(Node *&root,FILE *f)
