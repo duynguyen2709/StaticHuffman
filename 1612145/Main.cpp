@@ -1,10 +1,9 @@
-// C++ program for Huffman Coding
 #include <iostream>
 #include "Huffman.h"
 #include <vector>
 #include <wtypes.h>
 using namespace std;
-
+#define _CRT_SECURE_NO_WARNINGS
 
 int main(int argc, char *argv[])
 {
@@ -31,38 +30,28 @@ int main(int argc, char *argv[])
 			memset(f, 0, sizeof(f));
 			freopen(argv[2], "rb", stdin);
 
-			//read byte by byte from file
-			while (!cin.eof())
-			{
-				char x;
-				cin.read(&x, 1);
-				f[x]++;
-				inputString.push_back(x);
-			}
-			auto c = (char)inputString.back();
-			f[c]--;
-			inputString.pop_back();
-			for (int i = 0; i < 256; i++)
-			{
-				if (f[i]>0)
-				{
-					letter.push_back((char)i);
-					freq.push_back(f[i]);
-				}
-			}
 			
-			Node * root = HuffmanCompress(letter, freq,code);
-			string outputString = HuffmanOut(inputString, code);
-			writeHuffmanFile(outputString, argv[3]);
+			Compress::ReadInputFile(f, inputString, letter, freq);	//read source file 
+
+			Node * root = Compress::HuffmanCompress(letter, freq,code);	//build Huffman tree
+
+			string outputString = Compress::HuffmanOut(inputString, code);	//convert source file to binary
+
+			Compress::writeCompressFile(outputString, argv[3]);	//Write compressed letter to source file
+
 			freopen(argv[3], "wt", stdout);
-			writeHuffmanTree(root);
+			Compress::saveHuffmanTree(root);	//Save Huffman Tree for decompress
 		}
 		else if (strcmp(argv[1], "uncompress") == 0)
-		{
+		{/*
 			if (argc != 5)
 			{
 				throw ex;
-			}
+			}*/
+			auto hufFile = freopen(argv[3], "rt", stdin);
+			Node *root = NULL;
+			Uncompress::restoreHuffmanTree(root, hufFile);
+			cout << endl;
 		}
 		else throw ex;
 	}

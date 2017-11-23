@@ -6,6 +6,21 @@
 #include <utility>
 using namespace std;
 
+class ArgumentException :public exception
+{
+private:
+	string message;
+public:
+	ArgumentException()
+	{
+		message = "Error in argument !";
+	}
+
+	const string Message() const throw() { return message; }
+	void Message(string val) { message = val; }
+
+};
+
 struct Node
 {
 	unsigned char data;			 
@@ -28,26 +43,23 @@ struct compare
 	}
 };
 
-void printCodes(Node* root, string str, vector<pair<char, string>> &code);
+namespace Compress{
 
-Node* HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, string>> &code);
+	void printCodes(Node* root, string str, vector<pair<char, string>> &code);
 
-string HuffmanOut(vector<char> inputString, vector<pair<char, string>> code);
+	Node* HuffmanCompress(vector<char> letter, vector<int> freq, vector<pair<char, string>> &code);
 
-void writeHuffmanFile(string str, char *output);
+	string HuffmanOut(vector<char> inputString, vector<pair<char, string>> code);
 
-void writeHuffmanTree(Node *root);
-class ArgumentException :public exception
-{
-private:
-	string message;
-public:
-	ArgumentException()
-	{
-		message	="Error in argument !";
-	}
+	void writeCompressFile(string str, char *output);
+
+	void saveHuffmanTree(Node *root);
 	
-	const string Message() const throw() { return message; }
-	void Message(string val) { message = val; }
+	void ReadInputFile(unsigned f[256], vector<char>& inputString, vector<char>& letter,vector<int>& freq);
+}
 
-};
+
+namespace Uncompress
+{
+	void restoreHuffmanTree(Node *&root, FILE *f);
+}
