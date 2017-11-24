@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
 
 		if (strcmp(argv[1], "compress") == 0)
 		{
-			if (argc !=4)
+		/*	if (argc != 4)
 			{
 				throw ex;
-			}
+			}*/
 			vector<char> letter;
 			vector<char> inputString;
 			vector<int> freq;
@@ -30,33 +30,44 @@ int main(int argc, char *argv[])
 			memset(f, 0, sizeof(f));
 			freopen(argv[2], "rb", stdin);
 
-			
+
 			Compress::ReadInputFile(f, inputString, letter, freq);	//read source file 
 
-			Node * root = Compress::HuffmanCompress(letter, freq,code);	//build Huffman tree
+			Node * root = Compress::HuffmanCompress(letter, freq, code);	//build Huffman tree
 
-			string outputString = Compress::HuffmanOut(inputString, code);	//convert source file to binary
+			//string outputString = Compress::HuffmanOut(inputString, code);	//convert source file to binary
 
-			Compress::writeCompressFile(outputString, argv[3]);	//Write compressed letter to source file
-
+			Compress::writeCompressFile(Compress::HuffmanOut(inputString, code), argv[2]);	//Write compressed letter to source file
+			
 			freopen(argv[3], "wt", stdout);
 			Compress::saveHuffmanTree(root);	//Save Huffman Tree for decompress
 		}
+
+
 		else if (strcmp(argv[1], "uncompress") == 0)
-		{/*
+		{
+
 			if (argc != 5)
 			{
 				throw ex;
-			}*/
+			}
+
 			auto hufFile = freopen(argv[3], "rt", stdin);
 			Node *root = NULL;
 			Uncompress::restoreHuffmanTree(root, hufFile);
-			cout << endl;
+			_fcloseall();
+			cin.clear();
+
+			auto compressedFile = freopen(argv[2], "rb", stdin);
+			string bitString = Uncompress::restoreBitstring(compressedFile);
+
+			auto outFile = freopen(argv[4], "wb", stdout);
+			Uncompress::restoreCompressedFile(bitString, root);
 		}
 		else throw ex;
 	}
 
-	catch(ArgumentException& e)
+	catch (ArgumentException& e)
 	{
 		cout << e.Message() << endl;
 	}

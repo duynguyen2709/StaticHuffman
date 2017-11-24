@@ -94,7 +94,7 @@ namespace Compress{
 			{
 				left = 8 - val.length();
 				for (int j = 0; j < left; j++)
-					val = '0' + val;
+					val += '0';
 
 			}
 			BYTE x = static_cast<BYTE>(std::stoi(val, 0, 2));
@@ -109,32 +109,48 @@ namespace Compress{
 	{
 		if (root == NULL)
 		{
-			cout << "# ";
+			cout << "end ";
 			return;
 		}
-		cout << root->data << " ";
+		switch (root->data)
+		{
+		case '\n': cout << "\\n ";
+			break;
+		case '\r': cout << "\\r ";
+			break;
+		case '\t': cout << "\\t ";
+			break;
+		case '\0': cout << "\\0 ";
+			break;
+		case '$': cout << "node ";
+			break;
+		default:
+			cout << root->data << " ";
+			break;
+		}
+		
 		saveHuffmanTree(root->left);
 		saveHuffmanTree(root->right);
 	}
 
 	void ReadInputFile(unsigned f[256], vector<char>& inputString, vector<char>& letter, vector<int>& freq)
 	{
-		//read byte by byte from file
 		while (!cin.eof())
 		{
 			char x;
 			cin.read(&x, 1);
-			f[x]++;
+			f[(int)(x+128)]++;
 			inputString.push_back(x);
 		}
 		auto c = (char)inputString.back();
-		f[c]--;
+		f[(int)(c + 128)]--;
 		inputString.pop_back();
+
 		for (int i = 0; i < 256; i++)
 		{
 			if (f[i] > 0)
 			{
-				letter.push_back((char)i);
+				letter.push_back((char)(i-128));
 				freq.push_back(f[i]);
 			}
 		}
@@ -143,17 +159,90 @@ namespace Compress{
 
 namespace Uncompress{
 
-	void restoreHuffmanTree(Node *&root,FILE *f)
+	void restoreHuffmanTree(Node *&root, FILE *f)
 	{
-		char val = 0;
-
-		if (!fscanf(f, "%c ", &val) || val == '#')
+		string val = "";
+		char c = 0;
+		if (cin.eof())
 			return;
 
-		// Else create node with this item and recur for children
-		root = new Node(val,0);
+		cin >> val;
+		
+		if (val == "end" || cin.eof())
+			return;
+
+		if (val == "\\n")
+			c = '\n';
+		else if (val == "\\r")
+			c = '\r';
+		else if (val == "\\t")
+			c = '\t';
+		else if (val == "\\0")
+			c = '\0';
+		else if (val != "node")
+			c = val[0];
+
+		root = new Node(c, 0);
 		restoreHuffmanTree(root->left, f);
 		restoreHuffmanTree(root->right, f);
-		
 	}
+
+	string restoreBitstring(FILE *f)
+	{
+		string bitString;
+		char c = 0;
+		while (!cin.eof())
+		{
+			cin >> c;
+			bitset<8>binary(c);
+			bitString += binary.to_string();
+		}
+		int dem = (int)(c - '0');
+		bitString.resize(bitString.length() - 16 - dem);
+		return bitString;
+
+	}
+
+	void restoreCompressedFile(string binaryString, Node *root)
+	{
+		/*int pos = 0;
+		Node *temp = root;
+		while (pos < binaryString.length())
+		{			
+			if (temp == NULL)
+				return;
+			if (binaryString[pos] == '0')
+				temp = temp->left;
+			else if (binaryString[pos] == '1')
+			{
+				temp = temp->right;
+			}
+			if (temp->data != '$')
+			{
+				cout << temp->data;
+				temp = root;
+			}
+			pos++;
+		}*/
+
+		Node* curr = root;
+		for (int i = 0; i < binaryString.size(); i++)
+		{
+			if (binaryString[i] == '0')
+				curr = curr->left;
+			else
+				curr = curr->right;
+
+			if (curr->left == NULL && curr->right == NULL)
+			{				
+				if (curr->data == '\n')
+					cout << endl;
+				else
+					cout << curr->data;
+				curr = root;
+			}
+		}
+
+	}
+
 }
